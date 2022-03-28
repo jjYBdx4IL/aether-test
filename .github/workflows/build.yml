@@ -68,7 +68,7 @@ jobs:
       run: sudo apt-get update
       
     - name: Install Dependencies
-      run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
+      run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev ninja-build
 
     - name: Set Archive Name
       run: echo "ARCHIVE_NAME=Aether-${{ matrix.compiler }}.tar.xz" >> "$GITHUB_ENV"
