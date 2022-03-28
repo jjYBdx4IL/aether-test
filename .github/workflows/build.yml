@@ -79,7 +79,8 @@ jobs:
     - name: Build Plugin
       working-directory: ${{github.workspace}}/build
       env:
-        CXX: ${{ matrix.compiler }}
+        CC: ${{ matrix.config.compiler }}
+        CXX: ${{ matrix.config.compiler }}
       run: |
         cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_TESTS="on"
         cmake --build . --config $BUILD_TYPE
