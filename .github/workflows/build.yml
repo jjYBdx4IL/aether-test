@@ -21,9 +21,6 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Install Dependencies
-      run: brew install lv2
-
     - name: Set Archive Name
       run: echo "ARCHIVE_NAME=Aether-macos.tar.xz" >> "$GITHUB_ENV"
 
@@ -69,7 +66,7 @@ jobs:
       run: sudo apt-get update
       
     - name: Install Dependencies
-      run: sudo apt-get install lv2-dev libgl1-mesa-dev libglu1-mesa-dev
+      run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 
     - name: Set Archive Name
       run: echo "ARCHIVE_NAME=Aether-${{ matrix.compiler }}.tar.xz" >> "$GITHUB_ENV"
@@ -107,9 +104,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
-
-    - name: Install Dependencies
-      run: git clone https://gitlab.com/lv2/lv2.git
 
     - name: Set Archive Name
       run: echo "ARCHIVE_NAME=Aether-windows.zip" >> "$GITHUB_ENV"
