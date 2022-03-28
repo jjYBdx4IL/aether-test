@@ -55,8 +55,10 @@ jobs:
 
     strategy:
       matrix:
-        compiler: [g++-10, clang++-10]
-
+        config:
+          - { compiler: GNU,  CC: gcc-10,   CXX: g++-10 }
+          - { compiler: LLVM, CC: clang-10, CXX: clang++-10 }
+          
     steps:
     - uses: actions/checkout@v2
       with:
