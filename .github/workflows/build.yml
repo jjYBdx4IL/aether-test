@@ -68,7 +68,7 @@ jobs:
       run: sudo apt-get update
       
     - name: Install Dependencies
-      run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev ninja-build
+      run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 
     - name: Set Archive Name
       run: echo "ARCHIVE_NAME=Aether-${{ matrix.compiler }}.tar.xz" >> "$GITHUB_ENV"
@@ -81,7 +81,6 @@ jobs:
       env:
         CC: ${{ matrix.config.CC }}
         CXX: ${{ matrix.config.CXX }}
-        CMAKE_GENERATOR: "Ninja Multi-Config"
       run: |
         cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_TESTS="on"
         cmake --build . --config $BUILD_TYPE
