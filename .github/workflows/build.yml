@@ -1,0 +1,129 @@
+name: Automated builds
+
+on: [push]
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    outputs:
+        artifact-name: ${{ env.ARCHIVE_NAME }}
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Install Dependencies
+      run: brew install lv2
+
+    - name: Set Archive Name
+      run: echo "ARCHIVE_NAME=Aether-macos.tar.xz" >> "$GITHUB_ENV"
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{github.workspace}}/build
+
+    - name: Build Plugin
+      working-directory: ${{github.workspace}}/build
+      env:
+        CXX: clang++
+      run: |
+        cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_TESTS="on"
+        cmake --build . --config $BUILD_TYPE
+
+    - name: Create Archive
+      run: tar -cJf ${{ env.ARCHIVE_NAME }} -C build aether.lv2
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.ARCHIVE_NAME }}
+        path: ${{ env.ARCHIVE_NAME }}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: ctest -C $BUILD_TYPE
+
+  build-ubuntu:
+    runs-on: ubuntu-20.04
+
+    outputs:
+        artifact-name: ${{ env.ARCHIVE_NAME }}
+
+    strategy:
+      matrix:
+        compiler: [g++-10, clang++-10]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Install Dependencies
+      run: sudo apt install lv2-dev libgl1-mesa-dev libglu1-mesa-dev
+
+    - name: Set Archive Name
+      run: echo "ARCHIVE_NAME=Aether-${{ matrix.compiler }}.tar.xz" >> "$GITHUB_ENV"
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{github.workspace}}/build
+
+    - name: Build Plugin
+      working-directory: ${{github.workspace}}/build
+      env:
+        CXX: ${{ matrix.compiler }}
+      run: |
+        cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_TESTS="on"
+        cmake --build . --config $BUILD_TYPE
+
+    - name: Create Archive
+      run: tar -cJf ${{ env.ARCHIVE_NAME }} -C build aether.lv2
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.ARCHIVE_NAME }}
+        path: ${{ env.ARCHIVE_NAME }}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: ctest -C $BUILD_TYPE
+
+  build-windows:
+    runs-on: windows-2019
+
+    outputs:
+        artifact-name: ${{ env.ARCHIVE_NAME }}
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Install Dependencies
+      run: git clone https://gitlab.com/lv2/lv2.git
+
+    - name: Set Archive Name
+      run: echo "ARCHIVE_NAME=Aether-windows.zip" >> "$GITHUB_ENV"
+
+    - name: Build Plugin
+      shell: bash
+      run: |
+        mkdir build
+        cd build
+        cmake -G "Visual Studio 16 2019" .. -DLV2_INCLUDE_PATH="lv2"
+        cmake --build . --config=release
+
+    - name: Create Archive
+      working-directory: ${{github.workspace}}/build
+      run: 7z a ../${{ env.ARCHIVE_NAME }} aether.lv2
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.ARCHIVE_NAME }}
+        path: ${{ env.ARCHIVE_NAME }}
