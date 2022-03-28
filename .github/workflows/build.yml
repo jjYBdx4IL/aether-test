@@ -113,7 +113,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -G "Visual Studio 16 2019" .. -DLV2_INCLUDE_PATH="lv2"
+        cmake -G "Visual Studio 16 2019" ..
         cmake --build . --config=release
 
     - name: Create Archive
