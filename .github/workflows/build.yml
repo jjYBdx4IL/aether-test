@@ -81,6 +81,7 @@ jobs:
       env:
         CC: ${{ matrix.config.CC }}
         CXX: ${{ matrix.config.CXX }}
+        CMAKE_GENERATOR: "Ninja Multi-Config"
       run: |
         cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_TESTS="on"
         cmake --build . --config $BUILD_TYPE
